@@ -1,7 +1,17 @@
 version: '3.8'
 services:
-    expense-tracker:
-      image: parthkarad/expense-tracker:${TAG}
+    expense-tracker-frontend:
+      image: expense-tracker-frontend
+      hostname: saffron-expensetracker.com
+      ports:
+        - "3000:80"
+      networks:
+        - expense
+      depends_on:
+        - expense-tracker-backend
+    expense-tracker-backend:
+      #image: parthkarad/expense-tracker:${TAG}
+      image: expense-tracker-backend
       hostname: expense-java-app
       ports:
         - "8081:8080"
@@ -29,4 +39,3 @@ services:
 networks:
   expense:
     name: expense
-    external: true

@@ -6,47 +6,63 @@ pipeline {
     }
     environment {
         DATE = new Date().format('yy.M')
-        TAG = "${DATE}.${BUILD_NUMBER}"
+      //  TAG = "${DATE}.${BUILD_NUMBER}"
         DOCKERHUB_CREDENTIALS = credentials('docker_cred_id')
     }
     stages {
         stage('Checkout') {
             steps {
                 sh 'echo passed'
-                git branch: 'main', credentialsId: 'expense-id', url: 'https://github.com/oms-cs/Expense-Tracker.git'
+                git branch: 'main', credentialsId: 'github-id', url: 'https://github.com/parthcs-secondary/Expense-Tracker-Fullstack.git'
             }
         }
-        stage('Build and Test') {
+        stage('Backend: mvn Build and Test') {
             steps {
-                sh 'ls -ltr'
-                sh 'mvn clean package'
+                sh 'cd ./back-end/. && mvn clean package'
             }
         }
-        stage("Build Docker image") {
+        stage("Backend: Build Docker image") {
             steps {
-                sh 'sudo docker build . -t parthkarad/expense-tracker:${TAG}'
+                sh 'cd ./back-end/. && docker build . -t parthkarad/expense-tracker-backend-v2'
             }
         }
-        stage("Push image to Dockerhub") {
+        stage("Backend: Push image to Dockerhub") {
             steps {
-                sh 'sudo echo $DOCKERHUB_CREDENTIALS_PSW | sudo docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
-                sh 'sudo docker push parthkarad/expense-tracker:${TAG}'
+                sh 'echo $DOCKERHUB_CREDENTIALS_PSW | sudo docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
+                sh 'docker push parthkarad/parthkarad/expense-tracker-backend-v2'
             }
         }
-        stage('Write') {
+        // stage('Write') {
+        //     steps {
+        //         script {
+        //             writeFile file: '.env', text: 'TAG=' + env.TAG
+        //         }
+        //     }
+        // }
+        stage("Frontend: Build Docker image") {
             steps {
-                script {
-                    writeFile file: '.env', text: 'TAG=' + env.TAG
-                }
+                sh 'cd ./front-end/. && docker build . -t parthkarad/expense-tracker-frontend-v2'
             }
         }
-        stage("Bring application up") {
+        stage("Frontend: Push image to Dockerhub") {
             steps {
-                catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-                    sh "sudo docker network rm expense"
-                }
-                sh "sudo docker network create expense"
-                sh "sudo docker compose --env-file ./.env up --force-recreate --detach"
+                sh 'echo $DOCKERHUB_CREDENTIALS_PSW | sudo docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
+                sh 'docker push parthkarad/parthkarad/expense-tracker-frontend-v2'
+            }
+        }
+        stage("Taking older application down"){
+            steps{
+                sh 'docker compose down'
+            }
+        }
+        stage("Bringing new application up") {
+            steps {
+                // catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+                //     sh "sudo docker network rm expense"
+                // }
+                // sh "sudo docker network create expense"
+                // sh "sudo docker compose --env-file ./.env up --force-recreate --detach"
+                sh "docker compose up --detach"
             }
         }
     }

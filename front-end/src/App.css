@@ -1,0 +1,19 @@
+.upper-part{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border-bottom: double 1px black;
+    border-top: solid 1px black;
+    margin: 10px;
+    padding: 10px;
+    gap: 20px;
+}
+.title-expense{
+    border-bottom: solid 1px black;
+    font-size: 30px;
+    font-weight: 500;
+    text-align: center;
+    text-decoration: solid;
+    font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+}

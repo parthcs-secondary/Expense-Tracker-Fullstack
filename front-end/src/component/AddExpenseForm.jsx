@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 
-const Dummy = () => {
+const AddExpenseForm = () => {
   const [formData, setFormData] = useState({
     id: "",
     expenseName: "",
@@ -114,4 +114,4 @@ const Dummy = () => {
   );
 };
 
-export default Dummy;
+export default AddExpenseForm;

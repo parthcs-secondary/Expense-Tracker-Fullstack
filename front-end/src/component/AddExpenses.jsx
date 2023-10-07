@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import axios from "axios";
 
-//Currently not in use
-function MyForm() {
+//Currently not in use. Without CSS & Bootstrap
+function AddExpenses() {
   const [formData, setFormData] = useState({
     id: "",
     expenseName: "",
@@ -98,4 +98,4 @@ function MyForm() {
   );
 }
 
-export default MyForm;
+export default AddExpenses;

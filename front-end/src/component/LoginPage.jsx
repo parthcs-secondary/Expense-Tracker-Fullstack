@@ -36,12 +36,12 @@ const LoginPage = () => {
       .then((response) => {
         console.log("User data sent successfully", response.data);
         const JwtToken = response.data.jwtToken;
+        localStorage.setItem("JWT", JSON.stringify(JwtToken));
       })
       .catch((error) => {
         console.error("Error sending user data", error);
       });
 
-    localStorage.setItem(JWT, JSON.stringify(JwtToken));
     // <Navigate to="/" />;
     navigate("/");
   };

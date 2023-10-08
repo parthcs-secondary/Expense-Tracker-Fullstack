@@ -6,6 +6,7 @@ pipeline {
     }
     environment {
         DATE = new Date().format('yy.M')
+        //currently latest tag image being used for overwriting new image creations
       //  TAG = "${DATE}.${BUILD_NUMBER}"
         DOCKERHUB_CREDENTIALS = credentials('docker_cred_id')
     }
@@ -18,7 +19,9 @@ pipeline {
         }
         stage('Backend: mvn Build and Test') {
             steps {
-                sh 'cd ./back-end/. && mvn clean package'
+                sh 'cd ./back-end/. && ls && mvn clean package -DskipTests'
+                // sh 'cd ./back-end/. && ls'
+                // sh 'mvn clean package'
             }
         }
         stage("Backend: Build Docker image") {
@@ -28,8 +31,9 @@ pipeline {
         }
         stage("Backend: Push image to Dockerhub") {
             steps {
-                sh 'echo $DOCKERHUB_CREDENTIALS_PSW | sudo docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
-                sh 'docker push parthkarad/parthkarad/expense-tracker-backend-v2'
+                sh 'docker logout'
+                sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
+                sh 'docker push parthkarad/expense-tracker-backend-v2'
             }
         }
         // stage('Write') {
@@ -46,23 +50,23 @@ pipeline {
         }
         stage("Frontend: Push image to Dockerhub") {
             steps {
-                sh 'echo $DOCKERHUB_CREDENTIALS_PSW | sudo docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
-                sh 'docker push parthkarad/parthkarad/expense-tracker-frontend-v2'
+                sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
+                sh 'docker push parthkarad/expense-tracker-frontend-v2'
             }
         }
         stage("Taking older application down"){
             steps{
-                sh 'docker compose down'
+                sh 'cd ./back-end/. && docker compose down'
             }
         }
         stage("Bringing new application up") {
             steps {
                 // catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-                //     sh "sudo docker network rm expense"
+                //     sh "docker network rm expense"
                 // }
-                // sh "sudo docker network create expense"
-                // sh "sudo docker compose --env-file ./.env up --force-recreate --detach"
-                sh "docker compose up --detach"
+                // sh "docker network create expense"
+                // sh "docker compose --env-file ./.env up --force-recreate --detach"
+                sh "cd ./back-end/. && docker compose up --detach"
             }
         }
     }

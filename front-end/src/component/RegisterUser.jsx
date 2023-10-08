@@ -10,7 +10,7 @@ const RegisterUser = () => {
     password: "",
     emailId: "",
     mobileNo: "",
-    attributes: "ROLE_USER",
+    authorities: "ROLE_USER",
   });
 
   const handleChange = (e) => {

@@ -9,6 +9,7 @@ const HomePage = () => {
     e.preventDefault();
     localStorage.clear();
     navigate('/');
+    
   };
 
   return (
